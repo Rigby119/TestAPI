@@ -38,19 +38,5 @@ fun AppNavGraph(navController: NavHostController) {
                 onBackToHome = { navController.popBackStack() },
             )
         }
-        composable(
-            route = "game/{size}",
-            arguments =
-                listOf(
-                    navArgument("size") {
-                        type = NavType.IntType
-                        defaultValue = 9
-                    },
-                ),
-        ) {
-            GameScreen(
-                onBackToHome = { navController.popBackStack() },
-            )
-        }
     }
 }
