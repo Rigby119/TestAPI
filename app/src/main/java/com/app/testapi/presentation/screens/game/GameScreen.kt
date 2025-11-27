@@ -64,8 +64,8 @@ fun GameScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         SudokuGrid(
-            size = state.initialGrid.size.let { kotlin.math.sqrt(it.toDouble()).toInt() },
-            gridState = state.grid,
+            size = state.size,
+            gridState = state.currentGrid,
             initialGrid = state.initialGrid,
             selectedCell = state.selectedCell,
             onCellSelected = { r, c -> viewModel.selectCell(r, c) },

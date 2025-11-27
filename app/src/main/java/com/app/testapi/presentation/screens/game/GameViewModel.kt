@@ -2,35 +2,69 @@ package com.app.testapi.presentation.screens.game
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.app.testapi.domain.model.Difficulty
+import com.app.testapi.domain.usecase.GetSudokuUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.sqrt
 
 @HiltViewModel
 class GameViewModel
     @Inject
     constructor(
+        private val getSudokuUseCase: GetSudokuUseCase,
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
-        private val size = savedStateHandle.get<Int>("size") ?: 9
-        private val initialGrid =
-            if (size == 4) initial4x4Grid else initial9x9Grid
+        private val gridSize: Int = checkNotNull(savedStateHandle["size"])
 
-        private val solutionGrid =
-            if (size == 4) solution4x4 else solution9x9
+        private val _uiState = MutableStateFlow(GameUiState())
+        val uiState = _uiState.asStateFlow()
 
-        private val _uiState =
-            MutableStateFlow(
-                GameUiState(
-                    grid = initialGrid,
-                    initialGrid = initialGrid,
-                    selectedCell = null,
-                    statusMessage = "",
-                ),
-            )
-        val uiState: StateFlow<GameUiState> = _uiState
+        init {
+            val boxSize = sqrt(gridSize.toDouble()).toInt()
+            fetchNewGame(width = boxSize, height = boxSize)
+        }
+
+        fun fetchNewGame(
+            difficulty: Difficulty = Difficulty.MEDIUM,
+            width: Int,
+            height: Int,
+        ) {
+            viewModelScope.launch {
+                _uiState.update {
+                    it.copy(isLoading = true)
+                }
+
+                getSudokuUseCase(width, height, difficulty)
+                    .onSuccess { game ->
+                        val flatInitial = game.initialBoard.flatten().map { it ?: 0 }
+                        val flatSolution = game.solvedBoard.flatten()
+
+                        val size = game.initialBoard.size
+
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                size = size,
+                                currentGrid = flatInitial,
+                                initialGrid = flatInitial,
+                                solutionGrid = flatSolution,
+                                selectedCell = null,
+                                statusMessage = "Nuevo juego: ${difficulty.name}",
+                            )
+                        }
+                    }.onFailure { error ->
+                        _uiState.update {
+                            it.copy(isLoading = false, error = error.message ?: "Error desconocido")
+                        }
+                    }
+            }
+        }
 
         fun selectCell(
             row: Int,
@@ -42,257 +76,58 @@ class GameViewModel
         }
 
         fun onNumberSelected(number: Int) {
-            val (cellR, cellC) = _uiState.value.selectedCell ?: return
-            val index = cellR * size + cellC
+            val currentState = _uiState.value
+            val (cellR, cellC) = currentState.selectedCell ?: return
+
+            val index = (cellR * currentState.size) + cellC
+
+            if (index in currentState.initialGrid.indices && currentState.initialGrid[index] != 0) {
+                _uiState.update { it.copy(statusMessage = "No puedes modificar una celda fija") }
+                return
+            }
 
             _uiState.update { state ->
-                if (index !in state.grid.indices) return
+                if (index !in state.currentGrid.indices) return@update state
 
                 val updatedGrid =
-                    state.grid.toMutableList().apply {
+                    state.currentGrid.toMutableList().apply {
                         this[index] = number
                     }
 
+                val newMessage = if (!updatedGrid.contains(0)) "Tablero lleno, ¡verifica!" else ""
+
                 state.copy(
-                    grid = updatedGrid,
-                    statusMessage = "",
+                    currentGrid = updatedGrid,
+                    statusMessage = newMessage,
                 )
             }
         }
 
         fun checkGrid() {
-            val isCorrect = _uiState.value.grid == solutionGrid
+            val state = _uiState.value
+            val isCorrect = state.currentGrid == state.solutionGrid
+
             _uiState.update {
                 it.copy(
                     statusMessage =
                         if (isCorrect) {
-                            "¡Correcto! Sudoku resuelto."
+                            "¡Felicidades! Sudoku resuelto correctamente."
                         } else {
-                            "Aún hay errores. ¡Sigue intentándolo!"
+                            "Hay errores en el tablero. Revisa tus números."
                         },
                 )
             }
         }
 
         fun restart() {
-            _uiState.update {
-                it.copy(
-                    grid = initialGrid,
-                    selectedCell = null,
-                    statusMessage = "Juego Reiniciado.",
-                )
-            }
+            val currentDifficulty = _uiState.value.difficulty
+
+            val boxSize = sqrt(gridSize.toDouble()).toInt()
+
+            fetchNewGame(
+                difficulty = currentDifficulty,
+                width = boxSize,
+                height = boxSize,
+            )
         }
     }
-
-val initial4x4Grid =
-    listOf(
-        1,
-        2,
-        0,
-        4,
-        3,
-        4,
-        1,
-        2,
-        0,
-        1,
-        4,
-        3,
-        4,
-        3,
-        2,
-        1,
-    )
-// 0, 1, 2, 3
-
-val initial9x9Grid =
-    listOf(
-        5,
-        3,
-        0,
-        0,
-        7,
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        1,
-        9,
-        5,
-        0,
-        0,
-        0,
-        0,
-        9,
-        8,
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        8,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        3,
-        4,
-        0,
-        0,
-        8,
-        0,
-        3,
-        0,
-        0,
-        1,
-        7,
-        0,
-        0,
-        0,
-        2,
-        0,
-        0,
-        0,
-        6,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        2,
-        8,
-        0,
-        0,
-        0,
-        0,
-        4,
-        1,
-        9,
-        0,
-        0,
-        5,
-        0,
-        0,
-        0,
-        0,
-        8,
-        0,
-        0,
-        7,
-        9,
-    )
-
-// Soluciones (simplificadas para revisión rápida)
-val solution4x4 =
-    listOf(
-        1,
-        2,
-        3,
-        4,
-        3,
-        4,
-        1,
-        2,
-        2,
-        1,
-        4,
-        3,
-        4,
-        3,
-        2,
-        1,
-    )
-
-val solution9x9 =
-    listOf(
-        5,
-        3,
-        4,
-        6,
-        7,
-        8,
-        9,
-        1,
-        2,
-        6,
-        7,
-        2,
-        1,
-        9,
-        5,
-        3,
-        4,
-        8,
-        1,
-        9,
-        8,
-        3,
-        4,
-        2,
-        5,
-        6,
-        7,
-        8,
-        5,
-        9,
-        7,
-        6,
-        1,
-        4,
-        2,
-        3,
-        4,
-        2,
-        6,
-        8,
-        5,
-        3,
-        7,
-        9,
-        1,
-        7,
-        1,
-        3,
-        9,
-        2,
-        4,
-        8,
-        5,
-        6,
-        9,
-        6,
-        1,
-        5,
-        3,
-        7,
-        2,
-        8,
-        4,
-        2,
-        8,
-        7,
-        4,
-        1,
-        9,
-        6,
-        3,
-        5,
-        3,
-        4,
-        5,
-        2,
-        8,
-        6,
-        1,
-        7,
-        9,
-    )
