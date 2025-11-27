@@ -12,15 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.testapi.presentation.ui.components.atoms.PrimaryButton
 
 @Suppress("ktlint:standard:function-naming")
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(),
-    onGameSelected: (String) -> Unit,
-) {
+fun HomeScreen(onGameSelected: (String) -> Unit) {
     Column(
         modifier =
             Modifier

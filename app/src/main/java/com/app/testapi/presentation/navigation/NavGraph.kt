@@ -18,23 +18,24 @@ fun AppNavGraph(navController: NavHostController) {
     ) {
         composable("home") {
             HomeScreen(
-                onGameSelected = { size -> navController.navigate("game?size=$size") },
+                onGameSelected = { size ->
+                    navController.navigate("game/$size")
+                },
             )
         }
+
         composable(
-            route = "game?size={size}",
+            route = "game/{size}",
             arguments =
                 listOf(
                     navArgument("size") {
-                        type = NavType.StringType
-                        defaultValue = "9"
-                        nullable = true
+                        type = NavType.IntType
+                        defaultValue = 9
                     },
                 ),
-        ) { backStackEntry ->
+        ) {
             GameScreen(
-                size = backStackEntry.arguments?.getString("size")?.toIntOrNull() ?: 9,
-                onBackToHome = { navController.navigate("home") },
+                onBackToHome = { navController.popBackStack() },
             )
         }
     }

@@ -50,27 +50,11 @@ fun RowScope.CellButton(
             if (number != 0) {
                 Text(
                     text = number.toString(),
-                    color = if (isInitial) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary,
-                    fontWeight = if (isInitial) FontWeight.Bold else FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                 )
             }
-        }
-    }
-}
-
-@Suppress("ktlint:standard:function-naming")
-@Preview
-@Composable
-private fun PreviewCellButton() {
-    TestAPITheme {
-        Row {
-            CellButton(
-                number = 5,
-                isInitial = false,
-                isSelected = false,
-                onSelect = {},
-            )
         }
     }
 }

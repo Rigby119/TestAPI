@@ -33,15 +33,3 @@ fun PrimaryButton(
         )
     }
 }
-
-@Suppress("ktlint:standard:function-naming")
-@Preview
-@Composable
-private fun PreviewPrimaryButton() {
-    TestAPITheme {
-        PrimaryButton(
-            text = "Iniciar Sesión",
-            onClick = {},
-        )
-    }
-}
