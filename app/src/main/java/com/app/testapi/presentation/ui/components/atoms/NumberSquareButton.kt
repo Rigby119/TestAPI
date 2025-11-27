@@ -52,7 +52,7 @@ fun NumberSquareButton(
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(4.dp), // Pequeño padding interno para el texto
+            modifier = Modifier.padding(4.dp),
         ) {
             Text(
                 text = number.toString(),
@@ -62,39 +62,6 @@ fun NumberSquareButton(
                         color = currentContentColor,
                     ),
             )
-        }
-    }
-}
-
-@Suppress("ktlint:standard:function-naming")
-@Preview(showBackground = true)
-@Composable
-private fun PreviewNumberSquareButton() {
-    TestAPITheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            NumberSquareButton(number = 1, onClick = {}, modifier = Modifier.size(60.dp))
-
-            NumberSquareButton(number = 2, onClick = {}, isSelected = true, modifier = Modifier.size(60.dp))
-
-            NumberSquareButton(
-                number = 3,
-                onClick = {},
-                cornerRadius = 12.dp,
-                borderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                backgroundColor = Color.Transparent, // Sin fondo
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(60.dp),
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                NumberSquareButton(number = 7, onClick = {}, modifier = Modifier.weight(1f))
-                NumberSquareButton(number = 8, onClick = {}, modifier = Modifier.weight(1f))
-                NumberSquareButton(number = 9, onClick = {}, modifier = Modifier.weight(1f))
-            }
         }
     }
 }
