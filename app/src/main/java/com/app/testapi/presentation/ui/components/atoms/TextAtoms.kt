@@ -51,16 +51,3 @@ fun SecondaryCaption(
         modifier = modifier,
     )
 }
-
-@Suppress("ktlint:standard:function-naming")
-@Preview
-@Composable
-private fun PreviewTextAtoms() {
-    TestAPITheme {
-        Column {
-            DisplayTitle(text = "Rigby")
-            PrimaryBodyText(text = "Bienvenido de nuevo a tu aplicación.")
-            SecondaryCaption(text = "Último inicio de sesión: 08:36")
-        }
-    }
-}

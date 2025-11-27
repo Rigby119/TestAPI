@@ -42,17 +42,3 @@ fun PrimaryInput(
         modifier = modifier.fillMaxWidth(),
     )
 }
-
-@Suppress("ktlint:standard:function-naming")
-@Preview
-@Composable
-private fun PreviewPrimaryInput() {
-    var text by remember { mutableStateOf("Rigby") }
-    TestAPITheme {
-        PrimaryInput(
-            label = "Nombre de usuario",
-            value = text,
-            onValueChange = { text = it },
-        )
-    }
-}
