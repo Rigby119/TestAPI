@@ -35,7 +35,6 @@ fun PrimaryButton(
 }
 
 @Suppress("ktlint:standard:function-naming")
-// --- Ejemplo de uso ---
 @Preview
 @Composable
 private fun PreviewPrimaryButton() {
