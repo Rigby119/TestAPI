@@ -27,7 +27,8 @@ class GameViewModel
 
         init {
             val boxSize = sqrt(gridSize.toDouble()).toInt()
-            fetchNewGame(width = boxSize, height = boxSize)
+            val randomDifficulty = Difficulty.entries.random()
+            fetchNewGame(difficulty = randomDifficulty, width = boxSize, height = boxSize)
         }
 
         fun fetchNewGame(
@@ -120,12 +121,11 @@ class GameViewModel
         }
 
         fun restart() {
-            val currentDifficulty = _uiState.value.difficulty
-
             val boxSize = sqrt(gridSize.toDouble()).toInt()
+            val randomDifficulty = Difficulty.entries.random()
 
             fetchNewGame(
-                difficulty = currentDifficulty,
+                difficulty = randomDifficulty,
                 width = boxSize,
                 height = boxSize,
             )
