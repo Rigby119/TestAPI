@@ -68,6 +68,9 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
+    // HttpLogging
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
