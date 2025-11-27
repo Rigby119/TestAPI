@@ -1,4 +1,4 @@
-package com.app.testapi.presentation.screens
+package com.app.testapi.presentation.screens.home
 
 import androidx.lifecycle.ViewModel
 

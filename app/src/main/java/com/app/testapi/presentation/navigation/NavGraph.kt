@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.app.testapi.presentation.screens.HomeScreen
+import com.app.testapi.presentation.screens.home.HomeScreen
 
 @Suppress("ktlint:standard:function-naming")
 @Composable
